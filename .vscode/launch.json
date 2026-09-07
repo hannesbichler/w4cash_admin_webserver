@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "W4cashApplication",
+            "request": "launch",
+            "mainClass": "w4cash.W4cashApplication",
+            "projectName": "w4cash_admin_webserver",
+            "javaExec": "C:/Program Files (x86)/Java/openjdk-21.0.4.0.7-1/bin/java.exe"
+        }
+    ]
+}
