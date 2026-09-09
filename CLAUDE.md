@@ -19,13 +19,18 @@ Unlike the source project this is a **single Maven module** — no `rest/` sub-m
 
 ```
 ./mvnw compile -q            # compile
-./mvnw spring-boot:run       # run the server (listens on 0.0.0.0:3000, see application.properties)
+./mvnw spring-boot:run       # run the server (use https://w4cash.bichler.tech:3000, see application.properties)
 ```
 
 Run/debug via VS Code is configured (`.vscode/launch.json`, main class `w4cash.W4cashApplication`).
 
-The Angular UI proxies `/api/*` to `http://localhost:3000` with the `/api` prefix stripped
-(`proxy.conf.json` in the UI project), so a controller mapping is `/products`, not `/api/products`.
+The Angular UI proxies `/api/*` to `https://w4cash.bichler.tech:3000` (`proxy.conf.json` in the UI project).
+The backend accepts both bare routes like `/products` and `/api`-prefixed routes like
+`/api/products`.
+
+HTTPS is enabled with the repo-root PEM files `w4cash.bichler.tech.pem` and `w4cash.bichler.tech-key.pem` via
+`server.ssl.certificate` and `server.ssl.certificate-private-key`.
+The certificate SAN is `w4cash.bichler.tech`, so callers should resolve `w4cash.bichler.tech` to `217.154.223.125` if DNS is not already configured.
 
 ## Tests
 

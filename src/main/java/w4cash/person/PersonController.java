@@ -13,7 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,5 +55,100 @@ class PersonController {
 		}
 
 		return CollectionModel.of(persons, linkTo(methodOn(PersonController.class).all()).withSelfRel());
+	}
+
+	@PutMapping("/persons/{id}")
+	ResponseEntity<?> update(@PathVariable String id, @RequestBody Person body) {
+		if (body == null || body.getName() == null || body.getName().isBlank()) {
+			return ResponseEntity.badRequest().body("name is required");
+		}
+		if (body.getRole() == null || body.getRole().isBlank()) {
+			return ResponseEntity.badRequest().body("role is required");
+		}
+
+		String name = body.getName().trim();
+		String role = body.getRole().trim();
+		String card = body.getCard();
+		if (card != null) {
+			card = card.trim();
+			if (card.isEmpty()) {
+				card = null;
+			}
+		}
+
+		try (Connection conn = LoadDatabase.getConnection()) {
+			if (!exists(conn, id)) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No person with id=" + id);
+			}
+			if (nameTaken(conn, name, id)) {
+				return ResponseEntity.status(HttpStatus.CONFLICT)
+						.body("A person named \"" + name + "\" already exists");
+			}
+
+			try (PreparedStatement st = conn.prepareStatement(
+					"UPDATE PEOPLE SET NAME = ?, CARD = ?, ROLE = ? WHERE ID = ?")) {
+				st.setString(1, name);
+				st.setString(2, card);
+				st.setString(3, role);
+				st.setString(4, id);
+				st.executeUpdate();
+			}
+
+			body.setId_(id);
+			body.setName(name);
+			body.setRole(role);
+			body.setCard(card);
+			return ResponseEntity.ok(body);
+		} catch (SQLException e) {
+			logger.error("Failed to update person id={}", id, e);
+			return ResponseEntity.internalServerError().body("Failed to update person: " + e.getMessage());
+		}
+	}
+
+	@DeleteMapping("/persons/{id}")
+	ResponseEntity<?> delete(@PathVariable String id) {
+		try (Connection conn = LoadDatabase.getConnection()) {
+			if (!exists(conn, id)) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No person with id=" + id);
+			}
+
+			try (PreparedStatement st = conn.prepareStatement("DELETE FROM PEOPLE WHERE ID = ?")) {
+				st.setString(1, id);
+				int deleted = st.executeUpdate();
+				if (deleted <= 0) {
+					return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No person with id=" + id);
+				}
+			}
+
+			return ResponseEntity.noContent().build();
+		} catch (SQLException e) {
+			logger.error("Failed to delete person id={}", id, e);
+			String message = e.getMessage();
+			if (message != null && message.toLowerCase().contains("constraint")) {
+				return ResponseEntity.status(HttpStatus.CONFLICT)
+						.body("Person is still referenced and cannot be deleted");
+			}
+			return ResponseEntity.internalServerError().body("Failed to delete person: " + e.getMessage());
+		}
+	}
+
+	private boolean exists(Connection conn, String id) throws SQLException {
+		try (PreparedStatement st = conn.prepareStatement("SELECT 1 FROM PEOPLE WHERE ID = ?")) {
+			st.setString(1, id);
+			try (ResultSet rs = st.executeQuery()) {
+				return rs.next();
+			}
+		}
+	}
+
+	private boolean nameTaken(Connection conn, String name, String exceptId) throws SQLException {
+		try (PreparedStatement st = conn
+				.prepareStatement("SELECT 1 FROM PEOPLE WHERE LOWER(NAME) = LOWER(?) AND ID <> ?")) {
+			st.setString(1, name);
+			st.setString(2, exceptId);
+			try (ResultSet rs = st.executeQuery()) {
+				return rs.next();
+			}
+		}
 	}
 }

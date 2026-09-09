@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import w4cash.LoadDatabase;
@@ -105,5 +106,68 @@ class PersonControllerTest {
         mockMvc.perform(get("/persons"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded").doesNotExist());
+    }
+
+    @Test
+    void put_updatesPerson() throws Exception {
+        when(mockResultSet.next()).thenReturn(true, false);
+
+        mockMvc.perform(put("/persons/p1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"  Alice  \",\"role\":\"admin\",\"card\":\"1234\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id_").value("p1"))
+                .andExpect(jsonPath("$.name").value("Alice"))
+                .andExpect(jsonPath("$.role").value("admin"))
+                .andExpect(jsonPath("$.card").value("1234"));
+    }
+
+    @Test
+    void put_rejectsBlankName() throws Exception {
+        mockMvc.perform(put("/persons/p1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"\",\"role\":\"admin\",\"card\":null}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("name is required"));
+    }
+
+    @Test
+    void put_returnsNotFoundWhenMissing() throws Exception {
+        when(mockResultSet.next()).thenReturn(false);
+
+        mockMvc.perform(put("/persons/p999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Alice\",\"role\":\"admin\",\"card\":null}"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("No person with id=p999"));
+    }
+
+    @Test
+    void put_rejectsDuplicateName() throws Exception {
+        when(mockResultSet.next()).thenReturn(true, true);
+
+        mockMvc.perform(put("/persons/p1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Alice\",\"role\":\"admin\",\"card\":null}"))
+                .andExpect(status().isConflict())
+                .andExpect(content().string("A person named \"Alice\" already exists"));
+    }
+
+    @Test
+    void delete_removesPerson() throws Exception {
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockStatement.executeUpdate()).thenReturn(1);
+
+        mockMvc.perform(delete("/persons/p1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void delete_returnsNotFoundWhenMissing() throws Exception {
+        when(mockResultSet.next()).thenReturn(false);
+
+        mockMvc.perform(delete("/persons/p999"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("No person with id=p999"));
     }
 }

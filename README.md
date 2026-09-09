@@ -11,12 +11,16 @@ part of this project.
 ## Run
 
 ```
-./mvnw spring-boot:run     # listens on 0.0.0.0:3000
+./mvnw spring-boot:run     # listens on https://w4cash.bichler.tech:3000
 ./mvnw test                # 105 tests
 ```
 
 The Angular dev server proxies `/api/*` here — see `proxy.conf.json` in the UI
-project (target `http://localhost:3000`, `^/api` stripped).
+project (target `https://w4cash.bichler.tech:3000`). The backend accepts both `/products` and
+`/api/products` style routes.
+
+HTTPS is configured from the repo-root PEM files `w4cash.bichler.tech.pem` and `w4cash.bichler.tech-key.pem`.
+The certificate SAN is `w4cash.bichler.tech`, so callers should resolve `w4cash.bichler.tech` to `217.154.223.125` rather than use the raw IP directly.
 
 ## Endpoints
 
