@@ -37,6 +37,15 @@ class ProductsControllerTest {
     }
 
     @Test
+    void getAll_acceptsApiPrefix() throws Exception {
+        when(repository.findAll(isNull())).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/products"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists());
+    }
+
+    @Test
     void getAll_returnsProducts() throws Exception {
         Product product = new Product("prod1", "REF1", "BURGER", "Burger", 5.00, 9.99, "tax1", "cat1", "unit", "attrset1");
         when(repository.findAll(isNull())).thenReturn(List.of(product));

@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // Attribute sets (ATTRIBUTESET) and which attributes belong to each, in order (ATTRIBUTEUSE).
 // Used to populate a product's "attribute set" picker and to let admins define what a set contains.
 @RestController
+@RequestMapping({ "", "/api" })
 class AttributeSetsController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AttributeSetsController.class);

@@ -14,11 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import w4cash.LoadDatabase;
 
 @RestController
+@RequestMapping({ "", "/api" })
 class PersonController {
 	private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
 

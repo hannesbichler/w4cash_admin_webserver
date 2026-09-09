@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // Allowed values for an attribute (ATTRIBUTEVALUE), e.g. attribute "Size" -> values S, M, L, in order.
 @RestController
+@RequestMapping({ "", "/api" })
 class AttributeValuesController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AttributeValuesController.class);

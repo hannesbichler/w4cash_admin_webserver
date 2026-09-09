@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // Master list of ATTRIBUTE rows (e.g. "Size", "Color"), independent of any attribute set.
 @RestController
+@RequestMapping({ "", "/api" })
 class AttributesController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AttributesController.class);

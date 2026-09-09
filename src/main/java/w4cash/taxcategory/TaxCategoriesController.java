@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // Tax categories (TAXCATEGORIES) and their default rate history (TAXES, see TaxesRepository
 // for the "default rows only" scoping). Used both to populate a product's tax-category
 // picker and to let admins define/edit rates directly.
 @RestController
+@RequestMapping({ "", "/api" })
 class TaxCategoriesController {
 
 	private static final Logger logger = LoggerFactory.getLogger(TaxCategoriesController.class);

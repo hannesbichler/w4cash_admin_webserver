@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import w4cash.W4cashApplication;
@@ -26,6 +27,7 @@ import w4cash.W4cashApplication;
 // of scope: TicketPrintService only ever resolves an OS PrintService by name,
 // so that's the only thing worth configuring here.
 @RestController
+@RequestMapping({ "", "/api" })
 class PrinterController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PrinterController.class);

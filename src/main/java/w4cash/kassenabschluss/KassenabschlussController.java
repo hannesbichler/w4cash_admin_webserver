@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.openbravo.format.Formats;
@@ -22,6 +23,7 @@ import com.openbravo.format.Formats;
 import w4cash.LoadDatabase;
 
 @RestController
+@RequestMapping({ "", "/api" })
 class KassenabschlussController {
     private static final Logger logger = LoggerFactory.getLogger(KassenabschlussController.class);
 
