@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +105,7 @@ class ReportsControllerTest {
         when(repository.run(eq("products-list"), any())).thenReturn(pdfBytes);
 
         mockMvc.perform(post("/reports/products-list/run")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"minPrice\":\"5.0\"}"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_PDF))
@@ -119,7 +118,7 @@ class ReportsControllerTest {
         when(repository.exists("missing")).thenReturn(false);
 
         mockMvc.perform(post("/reports/missing/run")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{}"))
                 .andExpect(status().isNotFound());
     }
@@ -130,7 +129,7 @@ class ReportsControllerTest {
         when(repository.run(eq("products-list"), any())).thenThrow(new JRException("fill failed"));
 
         mockMvc.perform(post("/reports/products-list/run")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{}"))
                 .andExpect(status().isInternalServerError());
     }

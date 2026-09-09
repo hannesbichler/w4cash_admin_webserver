@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,8 +42,8 @@ class ProductsController {
 			List<EntityModel<Product>> products = repository.findAll(categoryId).stream()
 					.map(EntityModel::of)
 					.collect(Collectors.toList());
-			return ResponseEntity.ok(
-					CollectionModel.of(products, linkTo(methodOn(ProductsController.class).all(categoryId)).withSelfRel()));
+			return ResponseEntity.ok(Objects.requireNonNull(CollectionModel.of(Objects.requireNonNull(products),
+					linkTo(methodOn(ProductsController.class).all(categoryId)).withSelfRel())));
 		} catch (SQLException e) {
 			logger.error("Failed to load products, categoryId={}", categoryId, e);
 			return ResponseEntity.internalServerError().body("Failed to load products");

@@ -15,6 +15,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,7 @@ class FloorController {
 	// mirror in in-memory H2 on every call, which meant two concurrent requests
 	// could each observe the other's half-built table.
 	@GetMapping("/floors")
+	@NonNull
 	CollectionModel<EntityModel<Floor>> all() {
 		List<EntityModel<Floor>> floors = new ArrayList<>();
 		try (Connection conn = LoadDatabase.getConnection();

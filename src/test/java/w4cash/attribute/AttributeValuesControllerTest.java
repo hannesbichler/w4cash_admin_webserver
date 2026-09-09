@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +54,7 @@ class AttributeValuesControllerTest {
         when(repository.insert("attr1", "L")).thenReturn(new AttributeValueRef("generated-id", "L", 3));
 
         mockMvc.perform(post("/attributes/attr1/values")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"value\":\"L\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("generated-id"))
@@ -65,7 +64,7 @@ class AttributeValuesControllerTest {
     @Test
     void create_blankValue_returnsBadRequest() throws Exception {
         mockMvc.perform(post("/attributes/attr1/values")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"value\":\"\"}"))
                 .andExpect(status().isBadRequest());
 
@@ -77,7 +76,7 @@ class AttributeValuesControllerTest {
         when(attributesRepository.findById("missing")).thenReturn(Optional.empty());
 
         mockMvc.perform(post("/attributes/missing/values")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"value\":\"L\"}"))
                 .andExpect(status().isNotFound());
     }
@@ -87,7 +86,7 @@ class AttributeValuesControllerTest {
         when(repository.update("attr1", "v1", "XS")).thenReturn(true);
 
         mockMvc.perform(put("/attributes/attr1/values/v1")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"value\":\"XS\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.value").value("XS"));
@@ -98,7 +97,7 @@ class AttributeValuesControllerTest {
         when(repository.update(eq("attr1"), eq("missing"), any())).thenReturn(false);
 
         mockMvc.perform(put("/attributes/attr1/values/missing")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"value\":\"Ghost\"}"))
                 .andExpect(status().isNotFound());
     }
@@ -126,7 +125,7 @@ class AttributeValuesControllerTest {
                 new AttributeValueRef("v2", "M", 1), new AttributeValueRef("v1", "S", 2)));
 
         mockMvc.perform(put("/attributes/attr1/values-order")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("[\"v2\",\"v1\"]"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].value").value("M"));
@@ -139,7 +138,7 @@ class AttributeValuesControllerTest {
         when(attributesRepository.findById("missing")).thenReturn(Optional.empty());
 
         mockMvc.perform(put("/attributes/missing/values-order")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("[]"))
                 .andExpect(status().isNotFound());
 

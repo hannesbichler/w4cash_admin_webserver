@@ -772,8 +772,6 @@ public class TicketPrintService {
 
         if (sresource == null) {
             // TODO add ticket to print job repository with error message
-            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING,
-                    AppLocal.getIntString("message.cannotprintticket"));
             // msg.show(m_App, JPanelTicket.this);
         }
     }

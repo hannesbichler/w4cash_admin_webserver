@@ -113,7 +113,7 @@ class PersonControllerTest {
         when(mockResultSet.next()).thenReturn(true, false);
 
         mockMvc.perform(put("/persons/p1")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"name\":\"  Alice  \",\"role\":\"admin\",\"card\":\"1234\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id_").value("p1"))
@@ -125,7 +125,7 @@ class PersonControllerTest {
     @Test
     void put_rejectsBlankName() throws Exception {
         mockMvc.perform(put("/persons/p1")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"name\":\"\",\"role\":\"admin\",\"card\":null}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("name is required"));
@@ -136,7 +136,7 @@ class PersonControllerTest {
         when(mockResultSet.next()).thenReturn(false);
 
         mockMvc.perform(put("/persons/p999")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"name\":\"Alice\",\"role\":\"admin\",\"card\":null}"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("No person with id=p999"));
@@ -147,7 +147,7 @@ class PersonControllerTest {
         when(mockResultSet.next()).thenReturn(true, true);
 
         mockMvc.perform(put("/persons/p1")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"name\":\"Alice\",\"role\":\"admin\",\"card\":null}"))
                 .andExpect(status().isConflict())
                 .andExpect(content().string("A person named \"Alice\" already exists"));

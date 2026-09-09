@@ -104,7 +104,7 @@ class ProductsControllerTest {
         });
 
         mockMvc.perform(post("/products")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Fries\",\"code\":\"FRIES\",\"pricesell\":3.50,\"categoryId\":\"food\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id_").value("generated-id"))
@@ -116,7 +116,7 @@ class ProductsControllerTest {
         when(repository.update(eq("prod1"), any(Product.class))).thenReturn(true);
 
         mockMvc.perform(put("/products/prod1")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Premium Burger\",\"code\":\"BURGER\",\"pricesell\":12.99,\"categoryId\":\"food\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id_").value("prod1"))
@@ -128,7 +128,7 @@ class ProductsControllerTest {
         when(repository.update(eq("missing"), any(Product.class))).thenReturn(false);
 
         mockMvc.perform(put("/products/missing")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Ghost\"}"))
                 .andExpect(status().isNotFound());
     }

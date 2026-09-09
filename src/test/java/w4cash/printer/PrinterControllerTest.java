@@ -41,7 +41,7 @@ class PrinterControllerTest {
     @Test
     void configure_returns400_whenSlotUnknown() throws Exception {
         mockMvc.perform(put("/printers/config/4")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"printerName\":\"Not defined\"}"))
                 .andExpect(status().isBadRequest());
     }
@@ -49,7 +49,7 @@ class PrinterControllerTest {
     @Test
     void configure_returns400_whenPrinterNameBlank() throws Exception {
         mockMvc.perform(put("/printers/config/1")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"printerName\":\"\"}"))
                 .andExpect(status().isBadRequest());
     }
@@ -57,7 +57,7 @@ class PrinterControllerTest {
     @Test
     void configure_returns400_whenPrinterNotInstalled() throws Exception {
         mockMvc.perform(put("/printers/config/2")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"printerName\":\"totally-bogus-printer-xyz-123\"}"))
                 .andExpect(status().isBadRequest());
     }

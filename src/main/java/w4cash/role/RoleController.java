@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,8 @@ class RoleController {
 			logger.error("Failed to load roles", e);
 		}
 
-		return CollectionModel.of(roles, linkTo(methodOn(RoleController.class).all()).withSelfRel());
+		return Objects.requireNonNull(CollectionModel.of(Objects.requireNonNull(roles),
+				linkTo(methodOn(RoleController.class).all()).withSelfRel()));
 	}
 
 	@PostMapping("/roles")

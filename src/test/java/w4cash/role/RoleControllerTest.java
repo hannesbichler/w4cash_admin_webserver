@@ -28,7 +28,7 @@ class RoleControllerTest {
         when(repository.insert("Kellner")).thenReturn(new Role("generated-id", "Kellner"));
 
         mockMvc.perform(post("/roles")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Kellner\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id_").value("generated-id"))
@@ -40,7 +40,7 @@ class RoleControllerTest {
         when(repository.insert("Kellner")).thenReturn(new Role("generated-id", "Kellner"));
 
         mockMvc.perform(post("/roles")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"  Kellner  \"}"))
                 .andExpect(status().isCreated());
 
@@ -50,7 +50,7 @@ class RoleControllerTest {
     @Test
     void create_rejectsBlankName() throws Exception {
         mockMvc.perform(post("/roles")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"   \"}"))
                 .andExpect(status().isBadRequest());
 
@@ -62,7 +62,7 @@ class RoleControllerTest {
         when(repository.nameTaken("Kellner", "")).thenReturn(true);
 
         mockMvc.perform(post("/roles")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Kellner\"}"))
                 .andExpect(status().isConflict());
 
@@ -75,7 +75,7 @@ class RoleControllerTest {
         when(repository.update("2", "Service")).thenReturn(true);
 
         mockMvc.perform(put("/roles/2")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Service\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id_").value("2"))
@@ -87,7 +87,7 @@ class RoleControllerTest {
         when(repository.update("missing", "Service")).thenReturn(false);
 
         mockMvc.perform(put("/roles/missing")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Service\"}"))
                 .andExpect(status().isNotFound());
     }

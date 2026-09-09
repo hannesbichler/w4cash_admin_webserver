@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -84,7 +85,8 @@ class CategoryController {
 				.map(EntityModel::of)
 				.collect(Collectors.toList());
 
-		return CollectionModel.of(categories, linkTo(methodOn(CategoryController.class).all()).withSelfRel());
+		return Objects.requireNonNull(CollectionModel.of(Objects.requireNonNull(categories),
+				linkTo(methodOn(CategoryController.class).all()).withSelfRel()));
 	}
 
 	@PostMapping("/categories")
@@ -129,7 +131,8 @@ class CategoryController {
 			if (!repository.exists(id)) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No category with id=" + id);
 			}
-			// PRODUCTS.CATEGORY and CATEGORIES.PARENTID both reference this row, so say which
+			// PRODUCTS.CATEGORY and CATEGORIES.PARENTID both reference this row, so say
+			// which
 			// one is in the way instead of letting the constraint surface as a 500.
 			int children = repository.countChildren(id);
 			if (children > 0) {

@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,12 +54,13 @@ class PlaceController {
 				PreparedStatement st = conn.prepareStatement(SELECT_COLUMNS + " ORDER BY NAME");
 				ResultSet rs = st.executeQuery()) {
 			while (rs.next()) {
-				places.add(EntityModel.of(map(rs)));
+				places.add(EntityModel.of(Objects.requireNonNull(map(rs))));
 			}
 		} catch (SQLException e) {
 			logger.error("Failed to load places", e);
 		}
-		return CollectionModel.of(places, linkTo(methodOn(PlaceController.class).all()).withSelfRel());
+		return Objects.requireNonNull(CollectionModel.of(Objects.requireNonNull(places),
+				linkTo(methodOn(PlaceController.class).all()).withSelfRel()));
 	}
 
 	@GetMapping("/places/{floorId}")
@@ -69,14 +72,15 @@ class PlaceController {
 			st.setString(1, floorId);
 			try (ResultSet rs = st.executeQuery()) {
 				while (rs.next()) {
-					places.add(EntityModel.of(map(rs)));
+					places.add(EntityModel.of(Objects.requireNonNull(map(rs))));
 				}
 			}
 		} catch (SQLException e) {
 			logger.error("Failed to load places for floorId={}", floorId, e);
 		}
 
-		return CollectionModel.of(places, linkTo(methodOn(PlaceController.class).all(floorId)).withSelfRel());
+		return Objects.requireNonNull(CollectionModel.of(Objects.requireNonNull(places),
+				linkTo(methodOn(PlaceController.class).all(floorId)).withSelfRel()));
 	}
 
 	@PostMapping("/places")
@@ -150,6 +154,7 @@ class PlaceController {
 		return null;
 	}
 
+	@NonNull
 	private Place map(ResultSet rs) throws SQLException {
 		Place place = new Place(rs.getString("ID"), rs.getString("NAME"));
 		place.setFloorId(rs.getString("FLOOR"));

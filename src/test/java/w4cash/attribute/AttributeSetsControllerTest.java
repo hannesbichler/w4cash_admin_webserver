@@ -7,7 +7,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,7 +65,7 @@ class AttributeSetsControllerTest {
                 .thenReturn(new AttributeSetDetail("generated-id", "Shirt Variants", List.of()));
 
         mockMvc.perform(post("/attribute-sets")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Shirt Variants\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("generated-id"));
@@ -78,7 +77,7 @@ class AttributeSetsControllerTest {
         when(repository.findById("set1")).thenReturn(Optional.of(new AttributeSetDetail("set1", "Renamed", List.of())));
 
         mockMvc.perform(put("/attribute-sets/set1")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Renamed\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Renamed"));
@@ -89,7 +88,7 @@ class AttributeSetsControllerTest {
         when(repository.rename(eq("missing"), any())).thenReturn(false);
 
         mockMvc.perform(put("/attribute-sets/missing")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Ghost\"}"))
                 .andExpect(status().isNotFound());
     }
@@ -179,7 +178,7 @@ class AttributeSetsControllerTest {
                 List.of(new AttributeUseRef("attr2", "Color", 1), new AttributeUseRef("attr1", "Size", 2)))));
 
         mockMvc.perform(put("/attribute-sets/set1/attribute-order")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("[\"attr2\",\"attr1\"]"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.attributes[0].name").value("Color"));
@@ -192,7 +191,7 @@ class AttributeSetsControllerTest {
         when(repository.setExists("missing")).thenReturn(false);
 
         mockMvc.perform(put("/attribute-sets/missing/attribute-order")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("[]"))
                 .andExpect(status().isNotFound());
 

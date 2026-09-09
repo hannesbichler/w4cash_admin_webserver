@@ -74,7 +74,7 @@ class TaxCategoriesControllerTest {
         when(repository.insert("Reduced")).thenReturn(new TaxCategoryRef("generated-id", "Reduced"));
 
         mockMvc.perform(post("/tax-categories")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Reduced\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("generated-id"));
@@ -85,7 +85,7 @@ class TaxCategoriesControllerTest {
         when(repository.rename("cat1", "Renamed")).thenReturn(true);
 
         mockMvc.perform(put("/tax-categories/cat1")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Renamed\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Renamed"));
@@ -96,7 +96,7 @@ class TaxCategoriesControllerTest {
         when(repository.rename(eq("missing"), any())).thenReturn(false);
 
         mockMvc.perform(put("/tax-categories/missing")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Ghost\"}"))
                 .andExpect(status().isNotFound());
     }
@@ -124,7 +124,7 @@ class TaxCategoriesControllerTest {
                 .thenReturn(new TaxRateRef("generated-id", "Standard 20%", 20.0, "2024-01-01"));
 
         mockMvc.perform(post("/tax-categories/cat1/rates")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Standard 20%\",\"rate\":20.0,\"validFrom\":\"2024-01-01\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("generated-id"));
@@ -135,7 +135,7 @@ class TaxCategoriesControllerTest {
         when(repository.exists("missing")).thenReturn(false);
 
         mockMvc.perform(post("/tax-categories/missing/rates")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"x\",\"rate\":1.0,\"validFrom\":\"2024-01-01\"}"))
                 .andExpect(status().isNotFound());
     }
@@ -143,7 +143,7 @@ class TaxCategoriesControllerTest {
     @Test
     void createRate_missingValidFrom_returnsBadRequest() throws Exception {
         mockMvc.perform(post("/tax-categories/cat1/rates")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"x\",\"rate\":1.0}"))
                 .andExpect(status().isBadRequest());
 
@@ -155,7 +155,7 @@ class TaxCategoriesControllerTest {
         when(taxesRepository.update("cat1", "tax1", "Renamed", 21.0, "2024-06-01")).thenReturn(true);
 
         mockMvc.perform(put("/tax-categories/cat1/rates/tax1")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Renamed\",\"rate\":21.0,\"validFrom\":\"2024-06-01\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rate").value(21.0));
@@ -166,7 +166,7 @@ class TaxCategoriesControllerTest {
         when(taxesRepository.update(eq("cat1"), eq("missing"), any(), anyDouble(), any())).thenReturn(false);
 
         mockMvc.perform(put("/tax-categories/cat1/rates/missing")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Ghost\",\"rate\":1.0,\"validFrom\":\"2024-01-01\"}"))
                 .andExpect(status().isNotFound());
     }

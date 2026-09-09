@@ -48,7 +48,7 @@ class AttributesControllerTest {
         when(repository.insert("Color")).thenReturn(new AttributeRef("generated-id", "Color"));
 
         mockMvc.perform(post("/attributes")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Color\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("generated-id"))
@@ -58,7 +58,7 @@ class AttributesControllerTest {
     @Test
     void create_blankName_returnsBadRequest() throws Exception {
         mockMvc.perform(post("/attributes")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"\"}"))
                 .andExpect(status().isBadRequest());
 
@@ -70,7 +70,7 @@ class AttributesControllerTest {
         when(repository.update("attr1", "Size (EU)")).thenReturn(true);
 
         mockMvc.perform(put("/attributes/attr1")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Size (EU)\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Size (EU)"));
@@ -81,7 +81,7 @@ class AttributesControllerTest {
         when(repository.update(eq("missing"), any())).thenReturn(false);
 
         mockMvc.perform(put("/attributes/missing")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"name\":\"Ghost\"}"))
                 .andExpect(status().isNotFound());
     }
