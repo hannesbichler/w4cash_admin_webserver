@@ -109,6 +109,41 @@ class PersonControllerTest {
     }
 
     @Test
+    void post_createsPerson() throws Exception {
+        when(mockResultSet.next()).thenReturn(false);
+        when(mockStatement.executeUpdate()).thenReturn(1);
+
+        mockMvc.perform(post("/persons")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content("{\"name\":\"  Alice  \",\"role\":\"admin\",\"card\":\"1234\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id_").isNotEmpty())
+                .andExpect(jsonPath("$.name").value("Alice"))
+                .andExpect(jsonPath("$.role").value("admin"))
+                .andExpect(jsonPath("$.card").value("1234"));
+    }
+
+    @Test
+    void post_rejectsBlankName() throws Exception {
+        mockMvc.perform(post("/persons")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content("{\"name\":\"\",\"role\":\"admin\",\"card\":null}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("name is required"));
+    }
+
+    @Test
+    void post_rejectsDuplicateName() throws Exception {
+        when(mockResultSet.next()).thenReturn(true);
+
+        mockMvc.perform(post("/persons")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content("{\"name\":\"Alice\",\"role\":\"admin\",\"card\":null}"))
+                .andExpect(status().isConflict())
+                .andExpect(content().string("A person named \"Alice\" already exists"));
+    }
+
+    @Test
     void put_updatesPerson() throws Exception {
         when(mockResultSet.next()).thenReturn(true, false);
 

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,6 +59,54 @@ class PersonController {
 
 		return Objects.requireNonNull(CollectionModel.of(Objects.requireNonNull(persons),
 				linkTo(methodOn(PersonController.class).all()).withSelfRel()));
+	}
+
+	@PostMapping("/persons")
+	ResponseEntity<?> create(@RequestBody Person body) {
+		if (body == null || body.getName() == null || body.getName().isBlank()) {
+			return ResponseEntity.badRequest().body("name is required");
+		}
+		if (body.getRole() == null || body.getRole().isBlank()) {
+			return ResponseEntity.badRequest().body("role is required");
+		}
+
+		String name = body.getName().trim();
+		String role = body.getRole().trim();
+		String card = body.getCard();
+		if (card != null) {
+			card = card.trim();
+			if (card.isEmpty()) {
+				card = null;
+			}
+		}
+
+		try (Connection conn = LoadDatabase.getConnection()) {
+			if (nameTaken(conn, name, "")) {
+				return ResponseEntity.status(HttpStatus.CONFLICT)
+						.body("A person named \"" + name + "\" already exists");
+			}
+
+			String id = UUID.randomUUID().toString();
+			try (PreparedStatement st = conn.prepareStatement(
+					"INSERT INTO PEOPLE (ID, NAME, APPPASSWORD, CARD, ROLE, VISIBLE) VALUES (?, ?, ?, ?, ?, ?)")) {
+				st.setString(1, id);
+				st.setString(2, name);
+				st.setString(3, "");
+				st.setString(4, card);
+				st.setString(5, role);
+				st.setInt(6, 1);
+				st.executeUpdate();
+			}
+
+			body.setId_(id);
+			body.setName(name);
+			body.setRole(role);
+			body.setCard(card);
+			return ResponseEntity.status(HttpStatus.CREATED).body(body);
+		} catch (SQLException e) {
+			logger.error("Failed to create person", e);
+			return ResponseEntity.internalServerError().body("Failed to create person: " + e.getMessage());
+		}
 	}
 
 	@PutMapping("/persons/{id}")
