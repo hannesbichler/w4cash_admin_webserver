@@ -86,6 +86,7 @@ class PlaceController {
 	@PostMapping("/places")
 	ResponseEntity<?> create(@RequestBody Place body) {
 		try {
+			logger.info("POST /places request was called");
 			ResponseEntity<?> invalid = validate(body, null);
 			if (invalid != null) {
 				return invalid;

@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import w4cash.LoadDatabase;
@@ -17,6 +19,8 @@ import w4cash.LoadDatabase;
  */
 @Component
 public class PlacesRepository {
+
+	private static final Logger logger = LoggerFactory.getLogger(PlacesRepository.class);
 
 	private static final String INSERT_SQL =
 			"INSERT INTO PLACES (ID, NAME, X, Y, FLOOR, WIDTH, HEIGHT, FONTSIZE, FONTCOLOR) " +
@@ -104,6 +108,10 @@ public class PlacesRepository {
 
 	// NAME, X, Y, FLOOR, WIDTH, HEIGHT, FONTSIZE, FONTCOLOR starting at `first`.
 	private void bindColumns(PreparedStatement st, Place place, int first) throws SQLException {
+		logger.info(
+				"bindColumns firstIndex={} name={} x={} y={} floorId={} width={} height={} fontSize={} fontColor={}",
+				first, place.getName(), place.getX(), place.getY(), place.getFloorId(),
+				place.getWidth(), place.getHeight(), place.getFontSize(), place.getFontColor());
 		st.setString(first, place.getName());
 		st.setInt(first + 1, place.getX());
 		st.setInt(first + 2, place.getY());
